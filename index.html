@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bondastudio — ногтевая студия</title>
+  <meta name="description" content="Bondastudio — строгий минимализм, чистота линий и совершенство форм. Ногти как искусство.">
+
+  <!-- Шрифты -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script>
+    // Set initial theme before Tailwind paints
+    (() => {
+      const user = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = user === 'dark' || (!user && systemPrefersDark);
+      if (isDark) document.documentElement.classList.add('dark');
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            blush: {
+              50: '#fff6f8',
+              100: '#ffeaf0',
+              200: '#ffd4e0',
+              300: '#ffb3c8',
+              400: '#ff8fb0',
+              500: '#ff6b9a',   /* accent */
+              600: '#e84f84',
+              700: '#c8386d',
+              800: '#a12d57',
+              900: '#7f2546',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Helvetica Neue', 'Arial'],
+            serif: ['Playfair Display', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+  <style>
+    /* Additional micro-tweaks beyond Tailwind for purist minimalism */
+    html, body { height: 100%; }
+    ::selection { background: #ffb3c81f; color: inherit; }
+    .focus-ring:focus { outline: none; box-shadow: 0 0 0 2px rgba(255,107,154,.35); }
+    /* Smooth fade for narrative steps */
+    .step-active { opacity: 1; transform: translateY(0); }
+    .step-inactive { opacity: .35; transform: translateY(4px); }
+    /* Pin container for narrative */
+    @media (min-width: 1024px) {
+      .narrative-pin { position: sticky; top: 6rem; }
+    }
+    /* Mobile menu animations */
+    #mobileMenu {
+      transition: transform 0.3s ease-in-out;
+    }
+    /* Prevent body scroll when menu is open */
+    body.menu-open {
+      overflow: hidden;
+    }
+    /* Enhanced typography for Playfair Display */
+    .font-serif {
+      font-feature-settings: "kern" 1, "liga" 1;
+      letter-spacing: -0.02em;
+    }
+  </style>
+</head>
+<body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50 antialiased">
+  <header class="fixed inset-x-0 top-0 z-[100] backdrop-blur-sm bg-white/60 dark:bg-neutral-950/60">
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="flex items-center justify-between h-16">
+      <a href="#" class="flex items-center gap-3">
+        <span class="h-7 w-7 rounded-full ring-1 ring-neutral-200 dark:ring-neutral-800 flex items-center justify-center">
+          <span class="block h-3 w-3 rounded-full bg-blush-500"></span>
+        </span>
+        <span class="text-sm tracking-widest uppercase font-sans">Bondastudio</span>
+      </a>
+      
+      <nav class="hidden md:flex items-center gap-8 text-sm font-sans">
+        <a href="#craft" class="hover:text-blush-500 transition-colors">Подход</a>
+        <a href="#gallery" class="hover:text-blush-500 transition-colors">Работы</a>
+        <a href="#services" class="hover:text-blush-500 transition-colors">Услуги</a>
+        <a href="#booking" class="hover:text-blush-500 transition-colors">Запись</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <!-- Кнопка темы - теперь видна на всех устройствах -->
+        <button id="themeToggle" class="focus-ring h-9 w-9 ring-1 ring-neutral-200 dark:ring-neutral-800 rounded-full flex items-center justify-center transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900" aria-label="Сменить тему">
+          <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-neutral-800 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+          <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-neutral-200 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+          </svg>
+        </button>
+
+        <!-- Кнопка записи - скрыта на мобильных -->
+        <a href="#booking" class="hidden sm:inline-block text-xs tracking-widest uppercase px-3 py-2 rounded-full ring-1 ring-neutral-200 dark:ring-neutral-800 hover:ring-blush-500 hover:text-blush-500 transition-colors font-sans">Запись</a>
+
+        <!-- Бургер-меню для мобильных -->
+        <div class="md:hidden">
+          <button id="menuToggle" class="focus-ring h-9 w-9 ring-1 ring-neutral-200 dark:ring-neutral-800 rounded-full flex items-center justify-center transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900" aria-label="Открыть меню">
+            <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg id="closeIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+  <!-- Мобильное меню -->
+  <div id="mobileMenu" class="fixed inset-0 z-40 md:hidden transform transition-transform duration-300 ease-in-out -translate-y-full">
+    <div class="absolute inset-0 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-sm">
+      <div class="pt-20 pb-8 px-6 h-full flex flex-col">
+        <!-- Навигация -->
+        <nav class="flex-1 space-y-6">
+          <a href="#craft" class="block text-lg hover:text-blush-500 transition-colors py-2 border-b border-neutral-100 dark:border-neutral-800 font-sans" onclick="closeMobileMenu()">Подход</a>
+          <a href="#gallery" class="block text-lg hover:text-blush-500 transition-colors py-2 border-b border-neutral-100 dark:border-neutral-800 font-sans" onclick="closeMobileMenu()">Работы</a>
+          <a href="#services" class="block text-lg hover:text-blush-500 transition-colors py-2 border-b border-neutral-100 dark:border-neutral-800 font-sans" onclick="closeMobileMenu()">Услуги</a>
+          <a href="#booking" class="block text-lg hover:text-blush-500 transition-colors py-2 border-b border-neutral-100 dark:border-neutral-800 font-sans" onclick="closeMobileMenu()">Запись</a>
+        </nav>
+
+        <!-- Контактная информация -->
+        <div class="pt-8 border-t border-neutral-200 dark:border-neutral-800">
+          <div class="space-y-4 text-sm font-sans">
+            <div>
+              <div class="text-neutral-500 dark:text-neutral-400 uppercase tracking-widest text-xs">Адрес</div>
+              <p class="mt-1">г.Минск, ул. Леонида Беды 6</p>
+            </div>
+            <div>
+              <div class="text-neutral-500 dark:text-neutral-400 uppercase tracking-widest text-xs">График</div>
+              <p class="mt-1">Пн–Сб: 10:00–22:00</p>
+            </div>
+            <a href="#booking" class="inline-block mt-4 px-4 py-2 rounded-full bg-blush-500 text-white hover:bg-blush-600 transition-colors text-sm" onclick="closeMobileMenu()">
+              Записаться
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="mt-16">
+    <!-- Hero — pristine minimal funnel intro -->
+    <section class="relative overflow-hidden">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="min-h-[70vh] lg:min-h-[85vh] grid lg:grid-cols-2 items-center gap-12">
+          <div class="space-y-6">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl tracking-tight font-serif">
+              Строгий минимализм. <br class="hidden sm:block"/>Чистота линий. <br class="hidden sm:block"/>Совершенство форм.
+            </h1>
+            <p class="text-base text-neutral-600 dark:text-neutral-300 max-w-md font-sans">
+              Bondastudio — ногти как архитектура: безупречные пропорции, мягкий ритм, акцентный румянец розового.
+            </p>
+            <div class="flex items-center gap-3 font-sans">
+              <a href="#gallery" class="px-4 py-2 rounded-full bg-blush-500 text-white hover:bg-blush-600 transition-colors">Смотреть работы</a>
+              <a href="#craft" class="px-4 py-2 rounded-full ring-1 ring-neutral-200 dark:ring-neutral-800 hover:ring-blush-500 hover:text-blush-500 transition-colors">Наш подход</a>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="aspect-[4/5] rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800 overflow-hidden">
+              <img src="images/hero/hero-image.jpg" alt="Пример работы Bondastudio" class="w-full h-full object-cover">
+            </div>
+            <!-- Subtle caption -->
+            <p class="mt-4 text-xs text-neutral-500 dark:text-neutral-400 font-sans">Образы без визуального шума. Только форма, свет и тишина.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Craft — methodology -->
+    <section id="craft" class="py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <h2 class="text-2xl sm:text-3xl font-serif">Наш подход</h2>
+        <div class="mt-8 grid md:grid-cols-3 gap-8">
+          <div class="p-6 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800">
+            <h3 class="text-lg font-serif">Композиция</h3>
+            <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300 font-sans">Выверенные длина и апекс, линия улыбки и архитектура кутикулы — математическая чистота.</p>
+          </div>
+          <div class="p-6 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800">
+            <h3 class="text-lg font-serif">Материалы</h3>
+            <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300 font-sans">Базы и гели с ровной реологией: устойчивость без утяжеления, гладкая оптика покрытия.</p>
+          </div>
+          <div class="p-6 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800">
+            <h3 class="text-lg font-serif">Ритм</h3>
+            <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300 font-sans">Плавные такты движений, отсутствие лишних действий — отказ от лишнего.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery — Swiper -->
+    <section id="gallery" class="py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="flex items-end justify-between">
+          <h2 class="text-2xl sm:text-3xl font-serif">Галерея работ</h2>
+          <div class="flex items-center gap-2">
+            <button class="gallery-prev h-9 w-9 rounded-full ring-1 ring-neutral-200 dark:ring-neutral-800 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors" aria-label="Предыдущий">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="gallery-next h-9 w-9 rounded-full ring-1 ring-neutral-200 dark:ring-neutral-800 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors" aria-label="Следующий">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-8 swiper gallery-swiper">
+          <div class="swiper-wrapper">
+            <!-- Replace placeholders with your images -->
+            <div class="swiper-slide">
+              <div class="aspect-[4/5] rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800 overflow-hidden">
+                <img src="images/gallery/gallery-1.jpg" alt="Молочный розовый: свет как материал" class="w-full h-full object-cover">
+              </div>
+              <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300">Молочный розовый: свет как материал.</p>
+            </div>
+            <div class="swiper-slide">
+              <div class="aspect-[4/5] rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800 overflow-hidden">
+                <img src="images/gallery/gallery-2.jpg" alt="Молочный розовый: свет как материал" class="w-full h-full object-cover">
+              </div>
+              <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300">Французский маникюр: дисциплина линий.</p>
+            </div>
+            <div class="swiper-slide">
+              <div class="aspect-[4/5] rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800 overflow-hidden">
+                <img src="images/gallery/gallery-3.jpg" alt="Молочный розовый: свет как материал" class="w-full h-full object-cover">
+              </div>
+              <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300">Глянец без шума: гладкая оптика.</p>
+            </div>
+            <div class="swiper-slide">
+              <div class="aspect-[4/5] rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800 overflow-hidden">
+                <img src="images/gallery/gallery-4.jpg" alt="Молочный розовый: свет как материал" class="w-full h-full object-cover">
+              </div>
+              <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300">Овал как форма покоя.</p>
+            </div>
+          </div>
+          <div class="mt-6 flex items-center justify-between">
+            <div class="gallery-pagination"></div>
+            <a href="#booking" class="text-xs tracking-widest uppercase hover:text-blush-500 transition-colors">Записаться →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services — funnel clarity -->
+    <section id="services" class="py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <h2 class="text-2xl sm:text-3xl font-serif">Услуги</h2>
+        <div class="mt-8 grid md:grid-cols-3 gap-8">
+          <div class="p-6 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800">
+            <div class="flex items-baseline justify-between">
+              <h3 class="text-lg font-serif">Маникюр классический</h3>
+              <span class="text-sm text-neutral-500 dark:text-neutral-400 font-sans">от €40</span>
+            </div>
+            <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300 font-sans">Акуратная форма, выравнивание, глянец без лишних эффектов.</p>
+          </div>
+          <div class="p-6 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800">
+            <div class="flex items-baseline justify-between">
+              <h3 class="text-lg font-serif">Гель-укрепление</h3>
+              <span class="text-sm text-neutral-500 dark:text-neutral-400 font-sans">от €60</span>
+            </div>
+            <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300 font-sans">Архитектура апекса: устойчивость и оптика покрытия.</p>
+          </div>
+          <div class="p-6 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800">
+            <div class="flex items-baseline justify-between">
+              <h3 class="text-lg font-serif">Френч минималистичный</h3>
+              <span class="text-sm text-neutral-500 dark:text-neutral-400 font-sans">от €70</span>
+            </div>
+            <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300 font-sans">Линия улыбки как графика: дисциплина и мягкий акцент.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Booking — CTA -->
+    <section id="booking" class="py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800 p-8 lg:p-12 bg-gradient-to-br from-white to-blush-50 dark:from-neutral-900 dark:to-neutral-950">
+          <div class="grid lg:grid-cols-3 gap-12 items-center">
+            <div class="lg:col-span-2">
+              <h2 class="text-2xl sm:text-3xl font-serif">Записаться в Bondastudio</h2>
+              <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300 max-w-xl font-sans">Беларусь. Минск. Выберите удобное время — мы подготовим пространство тишины и света.</p>
+              <form class="mt-6 grid sm:grid-cols-2 gap-4 font-sans">
+                <div>
+                  <label class="block text-xs uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-2">Имя</label>
+                  <input type="text" placeholder="Ваше имя" class="w-full h-11 px-3 rounded-lg ring-1 ring-neutral-200 dark:ring-neutral-800 bg-white dark:bg-neutral-950 focus-ring" />
+                </div>
+                <div>
+                  <label class="block text-xs uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-2">Телефон</label>
+                  <input type="tel" placeholder="+375 ..." class="w-full h-11 px-3 rounded-lg ring-1 ring-neutral-200 dark:ring-neutral-800 bg-white dark:bg-neutral-950 focus-ring" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-2">Дата и время</label>
+                  <input type="datetime-local" class="w-full h-11 px-3 rounded-lg ring-1 ring-neutral-200 dark:ring-neutral-800 bg-white dark:bg-neutral-950 focus-ring" />
+                </div>
+                <button type="button" class="sm:col-span-2 mt-2 px-4 h-11 rounded-full bg-blush-500 text-white hover:bg-blush-600 transition-colors">Отправить заявку</button>
+              </form>
+            </div>
+            <div class="space-y-4">
+              <div class="p-6 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800">
+                <div class="text-sm text-neutral-500 dark:text-neutral-400 uppercase tracking-widest font-sans">Адрес</div>
+                <p class="mt-2 text-sm font-sans">Минск ул. Леонида Беды, 6</p>
+              </div>
+              <div class="p-6 rounded-2xl ring-1 ring-neutral-200 dark:ring-neutral-800">
+                <div class="text-sm text-neutral-500 dark:text-neutral-400 uppercase tracking-widest font-sans">График</div>
+                <p class="mt-2 text-sm font-sans">Пн–Сб: 10:00–22:00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-12 border-t border-neutral-200 dark:border-neutral-800">
+    <div class="mx-auto max-w-6xl px-6 flex items-center justify-between">
+      <p class="text-xs text-neutral-500 dark:text-neutral-400 font-sans">© Bondastudio. Минимализм как метод.</p>
+      <div class="flex items-center gap-4">
+        <a class="text-xs hover:text-blush-500 transition-colors font-sans" href="#services">Услуги</a>
+        <a class="text-xs hover:text-blush-500 transition-colors font-sans" href="#booking">Запись</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <script>
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      const root = document.documentElement;
+      const isDark = root.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // Swiper init
+    const gallerySwiper = new Swiper('.gallery-swiper', {
+      slidesPerView: 1.15,
+      spaceBetween: 16,
+      centeredSlides: true,
+      loop: true,
+      breakpoints: {
+        640: { slidesPerView: 2, centeredSlides: false },
+        1024: { slidesPerView: 3 }
+      },
+      pagination: {
+        el: '.gallery-pagination',
+        clickable: true,
+        bulletClass: 'inline-block h-2 w-2 rounded-full bg-neutral-300 dark:bg-neutral-700 mx-1',
+        bulletActiveClass: 'bg-blush-500'
+      },
+      navigation: {
+        nextEl: '.gallery-next',
+        prevEl: '.gallery-prev'
+      }
+    });
+
+    // Mobile menu functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+
+    function toggleMobileMenu() {
+      const isOpen = mobileMenu.classList.contains('translate-y-0');
+
+      if (isOpen) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    }
+
+    function openMobileMenu() {
+      mobileMenu.classList.remove('-translate-y-full');
+      mobileMenu.classList.add('translate-y-0');
+      menuIcon.classList.add('hidden');
+      closeIcon.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('translate-y-0');
+      mobileMenu.classList.add('-translate-y-full');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    menuToggle.addEventListener('click', toggleMobileMenu);
+
+    // Закрытие меню при клике на ссылку (уже добавлено в HTML)
+    // Закрытие меню при клике вне области меню
+    mobileMenu.addEventListener('click', (e) => {
+      if (e.target === mobileMenu) {
+        closeMobileMenu();
+      }
+    });
+
+    // Закрытие меню при нажатии Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !mobileMenu.classList.contains('-translate-y-full')) {
+        closeMobileMenu();
+      }
+    });
+  </script>
+</body>
+</html>
